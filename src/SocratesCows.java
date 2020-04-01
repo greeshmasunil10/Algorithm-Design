@@ -14,62 +14,59 @@ public class SocratesCows {
 		SocratesCows obj = new SocratesCows();
 		obj.input();
 		obj.createGraph();
-		obj.analysis();
+		obj.runTimeAnalysis();	
 	}
 
 	private void createGraph() {
-		HashMap<String,Node> hashnodes= new HashMap<>();
+		HashMap<String,Node> hashNodes= new HashMap<>();
 		ArrayList<Node> nodes= new ArrayList<>();
 		for(ArrayList<String> line : input_data) {
 			String u= line.get(0); String v= line.get(1); 
-			Node nodeu = new Node(u);
-			Node nodev	 = new Node(v);
-			if(hashnodes.containsKey(u))nodeu= hashnodes.get(u);
-			else nodeu = new Node(u);
-			if(hashnodes.containsKey(v))nodev= hashnodes.get(v);
-			else nodev = new Node(v);
+			Node nodeU = new Node(u);
+			Node nodeV	 = new Node(v);
+			if(hashNodes.containsKey(u))nodeU= hashNodes.get(u);
+			else nodeU = new Node(u);
+			if(hashNodes.containsKey(v))nodeV= hashNodes.get(v);
+			else nodeV = new Node(v);
 			int weight= Integer.parseInt(line.get(2));
-			nodev.addEdge(nodeu, weight);
-			hashnodes.put(nodeu.name,nodeu);
-			hashnodes.put(nodev.name,nodev);
+			nodeV.addEdge(nodeU, weight);
+			hashNodes.put(nodeU.name,nodeU);
+			hashNodes.put(nodeV.name,nodeV);
 		}
 		Graph graph = new Graph();
-		for (Entry < String, Node> entry: hashnodes.entrySet()) {
+		for (Entry < String, Node> entry: hashNodes.entrySet()) {
 			graph.addNode(entry.getValue());
 			nodes.add(entry.getValue());
 		}
 		System.out.print("\n\nadjacency list");
 		for (Node node : nodes) {
 			System.out.print("\n"+node.name+":");
-			for (Entry < Node, Integer> entry: node.adjacentNodes.entrySet()) {
+			for (Entry < Node, Integer> entry: node.adjacent_nodes.entrySet()) {
 				System.out.print(entry.getKey().name+",");
 			}
 		}
 		System.out.println("	\n");
-
-
-		ArrayList<Node> cownodes = graph.getCowNodes();
-		graph = RunShortestPathAlgorithm(graph, graph.getNode("z"));
-		for(Node node: cownodes) {
-			node.getpath();
+		ArrayList<Node> cowNodes = graph.getCowNodes();
+		graph = calcShortestPath(graph, graph.getNode("z"));
+		for(Node node: cowNodes) {
+			node.printShortestPath();
 		}
-		Node min= cownodes.get(0);
-		for(Node n: cownodes) {
-			if(n.distance < min.distance)
-				min= n;
+		Node fastestCow= cowNodes.get(0);
+		for(Node node: cowNodes) {
+			if(node.distance < fastestCow.distance)
+				fastestCow= node;
 		}
-		System.out.println("Answer :"+min.name+ " "+ min.distance);
-		System.out.println("\nThe cow from Meadow "+ min.name+" reaches first");
+		System.out.println("Answer :"+fastestCow.name+ " "+ fastestCow.distance);
+		System.out.println("\nThe cow from Meadow "+ fastestCow.name+" reaches first");
 
 	}
 
-
-	public void analysis() {
+	public void runTimeAnalysis() {
 		end_time = System.currentTimeMillis();
 		System.out.println("\nRun Time Analysis:-");
 		System.out.println("Total memory used: " + getUsedMemory()/1000000 + " MB");
-		float elapsedTime = end_time - start_time;
-		System.out.println("Total time elapsed: " + elapsedTime/1000+ " Seconds");
+		float elapsed_time = end_time - start_time;
+		System.out.println("Total time elapsed: " + elapsed_time/1000+ " Seconds");
 	}
 
 	public void input() {
@@ -86,12 +83,12 @@ public class SocratesCows {
 
 	public static class Graph{
 		ArrayList<Node> nodes = new ArrayList<>();
-		public  void addNode(Node n) {
-			nodes.add(n);
+		public  void addNode(Node pnode) {
+			nodes.add(pnode);
 		}
-		public Node getNode(String name) {
+		public Node getNode(String pname) {
 			for(Node node:nodes) {
-				if(node.name.equals(name))
+				if(node.name.equals(pname))
 					return node;
 			}	
 			return null;
@@ -109,78 +106,65 @@ public class SocratesCows {
 
 	public static class Node{
 		String name;
-		HashMap<Node,Integer> adjacentNodes = new HashMap<>();
+		HashMap<Node,Integer> adjacent_nodes = new HashMap<>();
 		int distance= INFINITY;
-		LinkedList<Node> shortestPath = new LinkedList<>();
-
-		public Node(String name) {
-			this.name = name;
+		LinkedList<Node> shortest_path = new LinkedList<>();
+		public Node(String pname) {
+			this.name = pname;
 		}
-		public void setDistance(int d) {
-			this.distance = d;
+		public void addEdge(Node pnode, int pweight) {
+			adjacent_nodes.put(pnode, pweight);
 		}
-		public void addEdge(Node n, int weight) {
-			adjacentNodes.put(n, weight);
-		}
-		public void getpath() {
+		public void printShortestPath() {
 			System.out.println("Cow at Meadow "+ this.name);
-			for(Node n : shortestPath) {
+			for(Node n : shortest_path) {
 				System.out.print(n.name+":"+"<---");
 			}
 			System.out.println(this.name);
-			System.out.println("distance:"+ this.distance);
+			System.out.println("Shortest path distance:"+ this.distance);
 			System.out.println();
-
 		}
-
-	}
-	private  void dispnodes(ArrayList<Node> nodes) {
-		for(Node n: nodes)
-			System.out.print(n.name+", ");
 	}
 
-	public Graph RunShortestPathAlgorithm(Graph g, Node source) {
+	public Graph calcShortestPath(Graph g, Node source) {
 		source.distance=0;
 		ArrayList<Node> settled = new ArrayList<>();
 		ArrayList<Node> unsettled = new ArrayList<>();
-
 		unsettled.add(source);
 		while(unsettled.size()!=0) {
 			Node currentNode= getEvaluationNode(unsettled);
 			unsettled.remove(currentNode);
 			for (Entry < Node, Integer> entry: 
-				currentNode.adjacentNodes.entrySet()) {
-				Node adjnode= entry.getKey();
+				currentNode.adjacent_nodes.entrySet()) {
+				Node adjacentNode= entry.getKey();
 				int weight= entry.getValue();
-				if(!settled.contains(adjnode)) {
-					setDistance(adjnode, weight,currentNode);
-					unsettled.add(adjnode);
+				if(!settled.contains(adjacentNode)) {
+					setDistance(adjacentNode, weight,currentNode);
+					unsettled.add(adjacentNode);
 				}
 			}
 			settled.add(currentNode);
 		}
-
 		return g;
-
 	} 
 	public  Node getEvaluationNode(ArrayList<Node> unsettled) {
 		int min = INFINITY;
-		Node EvaluationNode = null;
+		Node evaluationNode = null;
 		for(Node n: unsettled) {
 			if(n.distance< min) {
 				min=n.distance;
-				EvaluationNode= n;
+				evaluationNode= n;
 			}
 		}
-		return EvaluationNode;
+		return evaluationNode;
 	}
-	public void setDistance(Node adjNode, int weight, Node currentNode ) {
-		int currentDistance= currentNode.distance;
-		if(currentDistance + weight < adjNode.distance) {
-			adjNode.distance= currentDistance + weight;
-			LinkedList<Node> shortestPath = new LinkedList<>(currentNode.shortestPath);
-			shortestPath.add(currentNode);
-			adjNode.shortestPath= shortestPath;
+	public void setDistance(Node p_adjacentNode, int p_edgeWeight, Node p_currentNode ) {
+		int currentDistance= p_currentNode.distance;
+		if(currentDistance + p_edgeWeight < p_adjacentNode.distance) {
+			p_adjacentNode.distance= currentDistance + p_edgeWeight;
+			LinkedList<Node> shortestPath = new LinkedList<>(p_currentNode.shortest_path);
+			shortestPath.add(p_currentNode);
+			p_adjacentNode.shortest_path= shortestPath;
 		}
 	} 
 
