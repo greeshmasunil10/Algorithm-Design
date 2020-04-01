@@ -37,6 +37,7 @@ B 11
 2. Red
 • Time Limit: 1.5 seconds
 • Memory Limit: 512 Megabytes
+
 Little red riding hood is a very competent graph theorist. She has n intervals [li, ri]. She created a n
 vertex graph where each vertex represents an interval. There is an edge between u and v if and only if their
 corresponding intervals (call them interval u and v) intersect, i.e. max(lv, lu) ≤ min(rv, ru). Now she want
@@ -68,6 +69,7 @@ Sample Test Cases
 3. Mr. Meeseeks’ Bakery
 • Time Limit: 2 seconds
 • Memory Limit: 256 Megabytes
+
 In yet another dangerous adventure Morty joins his scientist grandfather Rick to buy a loaf of bread for
 breakfast from one of the best bakeries in Faraway land. The residents of Faraway land are kind but impatient
 creatures; if they get bored, they become merciless and will burn everything within their vicinity.
