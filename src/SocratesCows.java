@@ -12,7 +12,7 @@ public class SocratesCows {
 	public static void main(String[] args) {
 		getMaxMemory();
 		SocratesCows obj = new SocratesCows();
-		obj.input();
+		obj.scanInput();
 		obj.createGraph();
 		obj.runTimeAnalysis();	
 	}
@@ -53,10 +53,10 @@ public class SocratesCows {
 		}
 		Node fastestCow= cowNodes.get(0);
 		for(Node node: cowNodes) {
-			if(node.distance < fastestCow.distance)
+			if(node.distance_from_source < fastestCow.distance_from_source)
 				fastestCow= node;
 		}
-		System.out.println("Answer :"+fastestCow.name+ " "+ fastestCow.distance);
+		System.out.println("Answer :"+fastestCow.name+ " "+ fastestCow.distance_from_source);
 		System.out.println("\nThe cow from Meadow "+ fastestCow.name+" reaches first");
 
 	}
@@ -69,7 +69,7 @@ public class SocratesCows {
 		System.out.println("Total time elapsed: " + elapsed_time/1000+ " Seconds");
 	}
 
-	public void input() {
+	public void scanInput() {
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Enter:");
 		no_of_paths = Integer.parseInt(sc.nextLine());
@@ -107,7 +107,7 @@ public class SocratesCows {
 	public static class Node{
 		String name;
 		HashMap<Node,Integer> adjacent_nodes = new HashMap<>();
-		int distance= INFINITY;
+		int distance_from_source= INFINITY;
 		LinkedList<Node> shortest_path = new LinkedList<>();
 		public Node(String pname) {
 			this.name = pname;
@@ -121,47 +121,47 @@ public class SocratesCows {
 				System.out.print(n.name+":"+"<---");
 			}
 			System.out.println(this.name);
-			System.out.println("Shortest path distance:"+ this.distance);
+			System.out.println("Shortest path distance:"+ this.distance_from_source);
 			System.out.println();
 		}
 	}
 
 	public Graph calcShortestPath(Graph g, Node source) {
-		source.distance=0;
-		ArrayList<Node> settled = new ArrayList<>();
-		ArrayList<Node> unsettled = new ArrayList<>();
-		unsettled.add(source);
-		while(unsettled.size()!=0) {
-			Node currentNode= getEvaluationNode(unsettled);
-			unsettled.remove(currentNode);
+		source.distance_from_source=0;
+		ArrayList<Node> visited = new ArrayList<>();
+		ArrayList<Node> notVisited = new ArrayList<>();
+		notVisited.add(source);
+		while(notVisited.size()!=0) {
+			Node currentNode= chooseNextNode(notVisited);
+			notVisited.remove(currentNode);
 			for (Entry < Node, Integer> entry: 
 				currentNode.adjacent_nodes.entrySet()) {
 				Node adjacentNode= entry.getKey();
-				int weight= entry.getValue();
-				if(!settled.contains(adjacentNode)) {
-					setDistance(adjacentNode, weight,currentNode);
-					unsettled.add(adjacentNode);
+				int edgeWeight= entry.getValue();
+				if(!visited.contains(adjacentNode)) {
+					setDistance(adjacentNode, edgeWeight,currentNode);
+					notVisited.add(adjacentNode);
 				}
 			}
-			settled.add(currentNode);
+			visited.add(currentNode);
 		}
 		return g;
 	} 
-	public  Node getEvaluationNode(ArrayList<Node> unsettled) {
+	public  Node chooseNextNode(ArrayList<Node> notVisited) {
 		int min = INFINITY;
-		Node evaluationNode = null;
-		for(Node n: unsettled) {
-			if(n.distance< min) {
-				min=n.distance;
-				evaluationNode= n;
+		Node nextNode = null;
+		for(Node node: notVisited) {
+			if(node.distance_from_source< min) {
+				min=node.distance_from_source;
+				nextNode= node;
 			}
 		}
-		return evaluationNode;
+		return nextNode;
 	}
 	public void setDistance(Node p_adjacentNode, int p_edgeWeight, Node p_currentNode ) {
-		int currentDistance= p_currentNode.distance;
-		if(currentDistance + p_edgeWeight < p_adjacentNode.distance) {
-			p_adjacentNode.distance= currentDistance + p_edgeWeight;
+		int currentDistance= p_currentNode.distance_from_source;
+		if(currentDistance + p_edgeWeight < p_adjacentNode.distance_from_source) {
+			p_adjacentNode.distance_from_source= currentDistance + p_edgeWeight;
 			LinkedList<Node> shortestPath = new LinkedList<>(p_currentNode.shortest_path);
 			shortestPath.add(p_currentNode);
 			p_adjacentNode.shortest_path= shortestPath;
