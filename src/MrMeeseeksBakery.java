@@ -40,7 +40,7 @@ public class MrMeeseeksBakery {
 	}
 	private boolean serve() {
 		if(time<=(int)servingq.peek()) {
-			System.out.println("served:"+servingq.peek() +" time:"+time);
+			System.out.println("served:"+servingq.peek() +" time: "+time+ " seconds");
 			time++;
 			elements.remove(elements.indexOf( (int)servingq.peek()));
 			queues.remove(servingq);
