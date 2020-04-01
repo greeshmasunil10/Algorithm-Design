@@ -4,71 +4,61 @@ public class MrMeeseeksBakery {
 
 	int no_of_queues=0;
 	long start_time, end_time;
-	static ArrayList<ArrayList<String>> input_data = new ArrayList<>();
-	static ArrayList<Queue> queues = new ArrayList<>();
-	static ArrayList<Integer> elements = new ArrayList<>();
-	static Queue<Integer> servingq ;
-	static int n=0;
-	static int time=1;
-
-	public MrMeeseeksBakery() {
-		// TODO Auto-generated constructor stub
-	}
+	 ArrayList<ArrayList<String>> input_data = new ArrayList<>();
+	 ArrayList<Queue<Integer>> queues = new ArrayList<>();
+	 ArrayList<Integer> customers = new ArrayList<>();
+	 Queue<Integer> queueNowServing ;
+	 int noOfCustomersServed=0;
+	 int time=1;
 
 	public static void main(String[] args) {
 		MrMeeseeksBakery bakery = new MrMeeseeksBakery();
 		bakery.scanInput();
 		bakery.makeQueues();
 		bakery.takeOrder();
-		System.out.println("No of customers served:"+n);
+		System.out.println("No of customers served:"+bakery.noOfCustomersServed);
 		bakery.runTimeAnalysis();
 	}
 
 	private void takeOrder() {
-		boolean val= true;
-		while(val) {
-			ArrayList<Integer> frontPeople = new ArrayList<>();
-			int min=elements.get(findMinIndex());
-			servingq = getQueue(min);
-			Queue<Integer> temp = null;
-			while((int)servingq.peek()!=min && val) {
-				System.out.println("inside");
-				val= serve();
+		boolean bakeryOpen= true;
+		while(bakeryOpen) {
+			int lowestPatienceCustomer=findMin(customers);
+			queueNowServing = queueOfCustomer(lowestPatienceCustomer);
+			while(customerNowServing()!=lowestPatienceCustomer && bakeryOpen) {
+				bakeryOpen= serveLoaf();
 			}
-			val= serve();
+			bakeryOpen= serveLoaf();
 		}
 	}
-	private boolean serve() {
-		if(time<=(int)servingq.peek()) {
-			System.out.println("served:"+servingq.peek() +" time: "+time+ " seconds");
+	private boolean serveLoaf() {
+		if(time<=customerNowServing()) {
+			System.out.println("Served:"+customerNowServing() +" time: "+time+ " seconds");
 			time++;
-			elements.remove(elements.indexOf( (int)servingq.peek()));
-			queues.remove(servingq);
-			servingq.remove();
-
-			if(!servingq.isEmpty())
-				queues.add(servingq);
-			else
-				queues.remove(servingq);
-			n++;
+			customers.remove(customers.indexOf( customerNowServing()));
+			queues.remove(queueNowServing);
+			queueNowServing.remove();
+			noOfCustomersServed++;
+			if(!queueNowServing.isEmpty())
+				queues.add(queueNowServing);
 			if(queues.isEmpty())
 				return false;
+			return true;
 		}
 		else {
-			System.out.println("Customer "+servingq.peek()+" burned the bakery!");
+			System.out.println("Customer "+customerNowServing()+" burned the bakery!");
 			return false;
 		}
-
-		return true;
 	}
 
-	private int findMinIndex() {
-		return elements.indexOf (Collections.min(elements)); 
+	private int findMin(ArrayList<Integer> customers) {
+		return customers.get(customers.indexOf (Collections.min(customers))) ; 
 	}
-	private Queue<Integer> getQueue(int min) {
-		for(Queue q : queues)
-			if(q.contains(min))
-				return q;
+	
+	private Queue<Integer> queueOfCustomer(int min) {
+		for(Queue<Integer> queue : queues)
+			if(queue.contains(min))
+				return queue;
 		return null;
 	}
 
@@ -78,15 +68,19 @@ public class MrMeeseeksBakery {
 			int noOfPeople= Integer.parseInt(line.get(0));
 			for (int i=1; i<=noOfPeople; i++) {
 				queue.add(Integer.parseInt(line.get(i)));
-				elements.add(Integer.parseInt(line.get(i)));
+				customers.add(Integer.parseInt(line.get(i)));
 			}
 			queues.add(queue);
 		}
 	}
+	
+	public int customerNowServing() {
+		return(int)queueNowServing.peek();
+	}
 
 	public void scanInput() {
 		Scanner sc = new Scanner(System.in);
-		System.out.println("Enter:");
+		System.out.println("Input:");
 		no_of_queues = Integer.parseInt(sc.nextLine());
 		start_time = System.currentTimeMillis();
 		for (int i = 0; i < no_of_queues; i++) {
