@@ -64,7 +64,7 @@ Sample Test Cases
 4 6
 • Output 2 
 5
-
+ 
 3. Mr. Meeseeks’ Bakery
 • Time Limit: 2 seconds
 • Memory Limit: 256 Megabytes
