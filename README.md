@@ -25,8 +25,8 @@ stable the fastest (therefore definitely a capital letter) and the amount of tim
 stable.
 Sample Test Cases
 • Input
-5
-A d 9
+5/n
+A d 9/n
 B d 3
 C e 9
 d z 8
