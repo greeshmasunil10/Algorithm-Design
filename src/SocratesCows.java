@@ -1,9 +1,6 @@
 import java.util.*;
 import java.util.Map.Entry;
 
-
-
-
 public class SocratesCows {
 
 	static final int INFINITY =Integer.MAX_VALUE; 
@@ -11,7 +8,6 @@ public class SocratesCows {
 	int no_of_paths=0;
 	long start_time, end_time;
 	public SocratesCows() {
-		// TODO Auto-generated constructor stub
 	}
 	public static void main(String[] args) {
 		getMaxMemory();
@@ -28,25 +24,19 @@ public class SocratesCows {
 			String u= line.get(0); String v= line.get(1); 
 			Node nodeu = new Node(u);
 			Node nodev	 = new Node(v);
-			if(hashnodes.containsKey(u)) {
-				nodeu= hashnodes.get(u);}
-			else 	{
-				nodeu = new Node(u);}
-			if(hashnodes.containsKey(v)) {
-				nodev= hashnodes.get(v);}
-			else 	{
-				nodev = new Node(v);}
+			if(hashnodes.containsKey(u))nodeu= hashnodes.get(u);
+			else nodeu = new Node(u);
+			if(hashnodes.containsKey(v))nodev= hashnodes.get(v);
+			else nodev = new Node(v);
 			int weight= Integer.parseInt(line.get(2));
 			nodev.addEdge(nodeu, weight);
 			hashnodes.put(nodeu.name,nodeu);
 			hashnodes.put(nodev.name,nodev);
 		}
 		Graph graph = new Graph();
-		System.out.print("Graph nodes:");
 		for (Entry < String, Node> entry: hashnodes.entrySet()) {
 			graph.addNode(entry.getValue());
 			nodes.add(entry.getValue());
-			System.out.print(" "+entry.getValue().name);
 		}
 		System.out.print("\n\nadjacency list");
 		for (Node node : nodes) {
@@ -61,7 +51,7 @@ public class SocratesCows {
 		ArrayList<Node> cownodes = graph.getCowNodes();
 		graph = RunShortestPathAlgorithm(graph, graph.getNode("z"));
 		for(Node node: cownodes) {
-			System.out.println(node.name+":"); node.getpath();
+			node.getpath();
 		}
 		Node min= cownodes.get(0);
 		for(Node n: cownodes) {
@@ -69,12 +59,14 @@ public class SocratesCows {
 				min= n;
 		}
 		System.out.println("Answer :"+min.name+ " "+ min.distance);
+		System.out.println("\nThe cow from Meadow "+ min.name+" reaches first");
 
 	}
 
 
 	public void analysis() {
 		end_time = System.currentTimeMillis();
+		System.out.println("\nRun Time Analysis:-");
 		System.out.println("Total memory used: " + getUsedMemory()/1000000 + " MB");
 		float elapsedTime = end_time - start_time;
 		System.out.println("Total time elapsed: " + elapsedTime/1000+ " Seconds");
@@ -93,7 +85,6 @@ public class SocratesCows {
 	}
 
 	public static class Graph{
-
 		ArrayList<Node> nodes = new ArrayList<>();
 		public  void addNode(Node n) {
 			nodes.add(n);
@@ -102,7 +93,6 @@ public class SocratesCows {
 			for(Node node:nodes) {
 				if(node.name.equals(name))
 					return node;
-
 			}	
 			return null;
 		}
@@ -133,8 +123,9 @@ public class SocratesCows {
 			adjacentNodes.put(n, weight);
 		}
 		public void getpath() {
+			System.out.println("Cow at Meadow "+ this.name);
 			for(Node n : shortestPath) {
-				System.out.print(n.name+":"+"--->");
+				System.out.print(n.name+":"+"<---");
 			}
 			System.out.println(this.name);
 			System.out.println("distance:"+ this.distance);
