@@ -71,7 +71,7 @@ public class SocratesCows {
 
 	public void scanInput() {
 		Scanner sc = new Scanner(System.in);
-		System.out.println("Enter:");
+		System.out.println("Input:");
 		no_of_paths = Integer.parseInt(sc.nextLine());
 		start_time = System.currentTimeMillis();
 		for (int i = 0; i < no_of_paths; i++) {
